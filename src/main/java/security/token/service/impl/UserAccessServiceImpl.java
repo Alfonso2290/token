@@ -1,15 +1,16 @@
 package security.token.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import security.token.Repository.UserAccessRepository;
 import security.token.model.dto.TokenRequest;
 import security.token.model.dto.TokenResponse;
-import security.token.model.entity.UserAccess;
+import security.token.repository.UserAccessRepository;
 import security.token.service.UserAccessService;
 
-import java.util.List;
-import java.util.Optional;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 @Service
 @RequiredArgsConstructor
@@ -18,24 +19,20 @@ public class UserAccessServiceImpl implements UserAccessService {
 	private final UserAccessRepository userAccessRepository;
 
 	@Override
-	public TokenResponse generateToken(TokenRequest tokenRequest) {
-		//Mejorar obtencion de info
-		Optional<List<UserAccess>> userAccessEntityOptional = userAccessRepository
-				.findByUserAndPassword(tokenRequest.getUsername(), tokenRequest.getPassword());
+	public ResponseEntity<TokenResponse> generateToken(TokenRequest tokenRequest) {
 
-		TokenResponse tokenResponse = new TokenResponse();
-
-		if(userAccessEntityOptional.isPresent()){
-			UserAccess userAccessEntity = userAccessEntityOptional.get().get(0);
-			String role = userAccessEntity.getRole();
-
-			//Transformar en base64
-			String roleTransformed = role;
-
-			//Usar Mapping
-			tokenResponse.setAccess(roleTransformed);
-		}
-
-		return tokenResponse;
+		return userAccessRepository.findByUserAndPassword(
+				tokenRequest.getUsername(),
+				tokenRequest.getPassword()
+		).map(userAccessEntity -> {
+			String roleEncoded = Base64.getEncoder()
+					.encodeToString(userAccessEntity.getRole().getBytes(StandardCharsets.UTF_8));
+			return ResponseEntity.ok()
+					.contentType(MediaType.APPLICATION_JSON)
+					.body(new TokenResponse(roleEncoded));
+		}).orElse(ResponseEntity.internalServerError()
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Error", "Cuenta inválida")
+				.build());
 	}
 }

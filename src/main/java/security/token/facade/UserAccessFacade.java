@@ -1,6 +1,7 @@
 package security.token.facade;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import security.token.model.dto.TokenRequest;
 import security.token.model.dto.TokenResponse;
@@ -12,7 +13,7 @@ public class UserAccessFacade {
 
 	private final UserAccessService userAccessService;
 
-	public TokenResponse generateToken(TokenRequest tokenRequest){
+	public ResponseEntity<TokenResponse> generateToken(TokenRequest tokenRequest){
 		return userAccessService.generateToken(tokenRequest);
 	}
 }
