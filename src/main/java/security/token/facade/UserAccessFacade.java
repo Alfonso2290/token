@@ -16,4 +16,8 @@ public class UserAccessFacade {
 	public ResponseEntity<TokenResponse> generateToken(TokenRequest tokenRequest){
 		return userAccessService.generateToken(tokenRequest);
 	}
+
+	public String decodeToken(String token){
+		return userAccessService.decodeToken(token);
+	}
 }
