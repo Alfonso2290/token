@@ -14,7 +14,7 @@ public class UserAccess {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "[user]")
+	@Column(name = "username")
 	private String user;
 	private String password;
 	private String role;
