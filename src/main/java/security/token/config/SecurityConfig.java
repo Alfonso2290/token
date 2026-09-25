@@ -18,7 +18,8 @@ public class SecurityConfig implements WebMvcConfigurer {
 		registry.addMapping("/**")
 				.allowedOrigins("*") // puedes poner frontend real luego
 				.allowedMethods("GET", "POST", "PUT", "DELETE")
-				.allowedHeaders("*");
+				.allowedHeaders("*")
+				.exposedHeaders("Error");
 	}
 
 	@Bean
